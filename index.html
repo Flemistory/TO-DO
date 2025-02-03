@@ -1,31 +1,47 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8"> <!-- Указываем кодировку страницы (UTF-8 для поддержки кириллицы) -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Делаем страницу адаптивной -->
-  <title>To-Do List</title> <!-- Заголовок страницы -->
-  <link rel="stylesheet" href="styles.css"> <!-- Подключаем файл стилей -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="app"> <!-- Основной контейнер приложения -->
-    <h1>Zаметки</h1> <!-- Заголовок приложения -->
-    <h2>Добавь задачу</h2> <!-- Подзаголовок -->
-    <input type="text" id="taskInput" placeholder="Новая задача"> <!-- Поле ввода для новой задачи -->
-    <button id="addTaskBtn">Добавить</button> <!-- Кнопка для добавления задачи -->
-    <h3>Все задачи на сегодня</h3> <!-- Заголовок списка задач -->
-    <input type="text" id="searchInput" placeholder="Поиск задач"> <!-- Поле для поиска задач -->
-    <ul id="taskList"></ul> <!-- Список задач (будет заполняться через JavaScript) -->
-    <div id="filters"> <!-- Контейнер для кнопок фильтрации -->
-      <button id="showAll">Все</button> <!-- Кнопка "Все" -->
-      <button id="showActive">Активные</button> <!-- Кнопка "Активные" -->
-      <button id="showCompleted">Выполненные</button> <!-- Кнопка "Выполненные" -->
+  <div id="app">
+    <h1>Zаметки</h1>
+    <button id="themeToggle">Темная тема</button>
+    <h2>Добавь задачу</h2>
+    <input type="text" id="taskInput" placeholder="Новая задача">
+    <h3>Категория задачи</h3>
+    <select id="categoryInput">
+      <option value="Работа">Работа</option>
+      <option value="Дом">Дом</option>
+      <option value="Учеба">Учеба</option>
+      <option value="Другое">Другое</option>
+    </select>
+    <h3>Приоритет</h3>
+    <select id="priorityInput">
+      <option value="Высокий">Высокий</option>
+      <option value="Средний">Средний</option>
+      <option value="Низкий">Низкий</option>
+    </select>
+    <h3>Дедлайн</h3>
+    <input type="date" id="deadlineInput">
+    <button id="addTaskBtn">Добавить</button>
+    <h3>Все задачи на сегодня</h3>
+    <input type="text" id="searchInput" placeholder="Поиск задач">
+    <ul id="taskList"></ul>
+    <div id="filters">
+      <button id="showAll">Все</button>
+      <button id="showActive">Активные</button>
+      <button id="showCompleted">Выполненные</button>
     </div>
-    <div id="sorting"> <!-- Контейнер для кнопок сортировки -->
-      <button id="sortByDate">Сортировать по дате</button> <!-- Кнопка "Сортировать по дате" -->
-      <button id="sortByText">Сортировать по алфавиту</button> <!-- Кнопка "Сортировать по алфавиту" -->
-     
+    <div id="sorting">
+      <button id="sortByDate">Сортировать по дате</button>
+      <button id="sortByText">Сортировать по алфавиту</button>
+      
     </div>
   </div>
-  <script src="app.js"></script> <!-- Подключаем JavaScript-файл -->
+  <script src="app.js"></script>
 </body>
 </html>

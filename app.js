@@ -7,162 +7,220 @@ let showCompleted = document.getElementById("showCompleted");
 let sortByDate = document.getElementById("sortByDate");
 let sortByText = document.getElementById("sortByText");
 let searchInput = document.getElementById("searchInput");
+let categoryInput = document.getElementById("categoryInput");
+let priorityInput = document.getElementById("priorityInput");
+let deadlineInput = document.getElementById("deadlineInput");
+let themeToggle = document.getElementById("themeToggle");
 
-let originalTasks = []; // Массив для хранения исходного порядка задач
+let originalTasks = [];
 
+// Загрузка задач из LocalStorage
 document.addEventListener("DOMContentLoaded", function () {
-  let tasks = JSON.parse(localStorage.getItem("tasks")) || []; // Получаем задачи из LocalStorage
+  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
   tasks.forEach(task => {
-    addTaskToDOM(task.text, task.completed, task.date); // Добавляем задачи в DOM
+    addTaskToDOM(task.text, task.completed, task.date, task.category, task.deadline, task.priority);
   });
-  originalTasks = Array.from(taskList.querySelectorAll("li")); // Сохраняем исходный порядок задач
+  originalTasks = Array.from(taskList.querySelectorAll("li"));
+
+  // Загрузка темы
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark-theme");
+    themeToggle.textContent = "Светлая тема";
+  }
 });
 
-function addTaskToDOM(text, completed = false, date = new Date().toLocaleString()) {
-  let li = document.createElement("li"); // Создаем элемент списка (li)
+// Добавление задачи в DOM
+function addTaskToDOM(text, completed = false, date = new Date().toLocaleString(), category = "Другое", deadline = "", priority = "Средний") {
+  let li = document.createElement("li");
 
-  let taskTextNode = document.createTextNode(text); // Создаем текстовый узел для задачи
-  li.appendChild(taskTextNode); // Добавляем текст задачи в li
+  let taskTextNode = document.createTextNode(text);
+  li.appendChild(taskTextNode);
 
   if (completed) {
-    li.classList.add("completed"); // Добавляем класс "completed", если задача выполнена
+    li.classList.add("completed");
   }
 
-  let dateElement = document.createElement("span"); // Создаем элемент для отображения даты
-  dateElement.textContent = ` (${date})`; // Добавляем дату в формате "дд.мм.гггг, чч:мм:сс"
-  dateElement.style.fontSize = "12px"; // Уменьшаем размер шрифта
-  dateElement.style.color = "#666"; // Серый цвет для даты
-  li.appendChild(dateElement); // Добавляем дату в элемент задачи
+  let dateElement = document.createElement("span");
+  dateElement.textContent = ` (${date})`;
+  dateElement.style.fontSize = "12px";
+  dateElement.style.color = "#666";
+  li.appendChild(dateElement);
 
-  let taskButtons = document.createElement("div"); // Создаем контейнер для кнопок
-  taskButtons.className = "task-buttons"; // Добавляем класс для стилизации
+  let categoryElement = document.createElement("span");
+  categoryElement.textContent = ` [${category}]`;
+  categoryElement.style.fontSize = "12px";
+  categoryElement.style.color = "#17a2b8";
+  li.appendChild(categoryElement);
 
-  let completeBtn = document.createElement("button"); // Кнопка "Выполнено"
-  completeBtn.textContent = completed ? "Отменить" : "Выполнено"; // Текст кнопки зависит от статуса задачи
-  completeBtn.classList.add("complete-btn"); // Добавляем класс для стилизации
+  let priorityElement = document.createElement("span");
+  priorityElement.textContent = ` ⚡ ${priority}`;
+  priorityElement.style.fontSize = "12px";
+  priorityElement.style.color = priority === "Высокий" ? "#dc3545" : priority === "Средний" ? "#ffc107" : "#28a745";
+  li.appendChild(priorityElement);
+
+  if (deadline) {
+    let deadlineElement = document.createElement("span");
+    deadlineElement.textContent = ` ⏰ ${deadline}`;
+    deadlineElement.style.fontSize = "12px";
+    deadlineElement.style.color = "#dc3545";
+    li.appendChild(deadlineElement);
+  }
+
+  let taskButtons = document.createElement("div");
+  taskButtons.className = "task-buttons";
+
+  let completeBtn = document.createElement("button");
+  completeBtn.textContent = completed ? "Отменить" : "Выполнено";
+  completeBtn.classList.add("complete-btn");
   completeBtn.addEventListener("click", function () {
-    li.classList.toggle("completed"); // Переключаем класс "completed"
-    completeBtn.textContent = li.classList.contains("completed") ? "Отменить" : "Выполнено"; // Меняем текст кнопки
-    updateLocalStorage(); // Обновляем LocalStorage
+    li.classList.toggle("completed");
+    completeBtn.textContent = li.classList.contains("completed") ? "Отменить" : "Выполнено";
+    updateLocalStorage();
   });
 
-  let editBtn = document.createElement("button"); // Кнопка "Редактировать"
-  editBtn.textContent = "Редактировать"; // Текст кнопки
-  editBtn.classList.add("edit-btn"); // Добавляем класс для стилизации
+  let editBtn = document.createElement("button");
+  editBtn.textContent = "Редактировать";
+  editBtn.classList.add("edit-btn");
   editBtn.addEventListener("click", function () {
-    let newText = prompt("Редактировать задачу:", text); // Запрашиваем новый текст задачи
+    let newText = prompt("Редактировать задачу:", text);
     if (newText !== null && newText.trim() !== "") {
-      li.childNodes[0].textContent = newText.trim(); // Обновляем текст задачи (первый дочерний элемент)
-      updateLocalStorage(); // Обновляем LocalStorage
+      li.childNodes[0].textContent = newText.trim();
+      updateLocalStorage();
     }
   });
 
-  let deleteBtn = document.createElement("button"); // Кнопка "Удалить"
-  deleteBtn.textContent = "Удалить"; // Текст кнопки
-  deleteBtn.classList.add("delete-btn"); // Добавляем класс для стилизации
+  let deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Удалить";
+  deleteBtn.classList.add("delete-btn");
   deleteBtn.addEventListener("click", function () {
-    li.remove(); // Удаляем задачу из DOM
-    updateLocalStorage(); // Обновляем LocalStorage
+    li.remove();
+    updateLocalStorage();
   });
 
-  taskButtons.appendChild(completeBtn); // Добавляем кнопку "Выполнено" в контейнер
-  taskButtons.appendChild(editBtn); // Добавляем кнопку "Редактировать" в контейнер
-  taskButtons.appendChild(deleteBtn); // Добавляем кнопку "Удалить" в контейнер
-  li.appendChild(taskButtons); // Добавляем контейнер с кнопками в элемент задачи
+  taskButtons.appendChild(completeBtn);
+  taskButtons.appendChild(editBtn);
+  taskButtons.appendChild(deleteBtn);
+  li.appendChild(taskButtons);
 
-  taskList.appendChild(li); // Добавляем задачу в список (ul)
-  originalTasks.push(li); // Добавляем задачу в исходный порядок
+  taskList.appendChild(li);
+  originalTasks.push(li);
 }
 
+// Добавление задачи
 addTaskBtn.addEventListener("click", function () {
-  let taskText = taskInput.value.trim(); // Получаем текст задачи из поля ввода
+  let taskText = taskInput.value.trim();
+  let taskCategory = categoryInput.value;
+  let taskDeadline = deadlineInput.value;
+  let taskPriority = priorityInput.value;
 
   if (taskText !== "") {
-    addTaskToDOM(taskText); // Добавляем задачу в DOM
-    taskInput.value = ""; // Очищаем поле ввода
-    updateLocalStorage(); // Обновляем LocalStorage
+    addTaskToDOM(taskText, false, new Date().toLocaleString(), taskCategory, taskDeadline, taskPriority);
+    taskInput.value = "";
+    deadlineInput.value = "";
+    updateLocalStorage();
   }
 });
 
+// Обновление LocalStorage
 function updateLocalStorage() {
   let tasks = [];
   taskList.querySelectorAll("li").forEach(li => {
-    let taskText = li.childNodes[0].textContent; // Получаем текст задачи (первый дочерний элемент)
-    let taskDate = li.querySelector("span").textContent.replace(/[()]/g, ""); // Получаем дату задачи
+    let taskText = li.childNodes[0].textContent;
+    let taskDate = li.querySelector("span").textContent.replace(/[()]/g, "");
+    let taskCategory = li.querySelectorAll("span")[1].textContent.replace(/[\[\]]/g, "");
+    let taskPriority = li.querySelectorAll("span")[2].textContent.replace("⚡ ", "");
+    let taskDeadline = li.querySelectorAll("span")[3] ? li.querySelectorAll("span")[3].textContent.replace("⏰ ", "") : "";
     tasks.push({
-      text: taskText, // Текст задачи
-      completed: li.classList.contains("completed"), // Статус выполнения
-      date: taskDate // Дата создания
+      text: taskText,
+      completed: li.classList.contains("completed"),
+      date: taskDate,
+      category: taskCategory,
+      priority: taskPriority,
+      deadline: taskDeadline
     });
   });
-  localStorage.setItem("tasks", JSON.stringify(tasks)); // Сохраняем задачи в LocalStorage
+  localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-showAll.addEventListener("click", () => filterTasks("all")); // Показываем все задачи
-showActive.addEventListener("click", () => filterTasks("active")); // Показываем только активные задачи
-showCompleted.addEventListener("click", () => filterTasks("completed")); // Показываем только выполненные задачи
+// Фильтрация задач
+showAll.addEventListener("click", () => filterTasks("all"));
+showActive.addEventListener("click", () => filterTasks("active"));
+showCompleted.addEventListener("click", () => filterTasks("completed"));
 
 function filterTasks(filter) {
-  let tasks = taskList.querySelectorAll("li"); // Получаем все задачи
+  let tasks = taskList.querySelectorAll("li");
   tasks.forEach(task => {
     switch (filter) {
       case "all":
-        task.style.display = "flex"; // Показываем все задачи
+        task.style.display = "flex";
         break;
       case "active":
-        task.style.display = task.classList.contains("completed") ? "none" : "flex"; // Показываем только активные задачи
+        task.style.display = task.classList.contains("completed") ? "none" : "flex";
         break;
       case "completed":
-        task.style.display = task.classList.contains("completed") ? "flex" : "none"; // Показываем только выполненные задачи
+        task.style.display = task.classList.contains("completed") ? "flex" : "none";
         break;
     }
   });
 }
 
-sortByDate.addEventListener("click", () => sortTasks("date")); // Сортировка по дате
-sortByText.addEventListener("click", () => sortTasks("text")); // Сортировка по алфавиту
+// Сортировка задач
+sortByDate.addEventListener("click", () => sortTasks("date"));
+sortByText.addEventListener("click", () => sortTasks("text"));
 
 function sortTasks(sortBy) {
-  let tasks = Array.from(taskList.querySelectorAll("li")); // Получаем все задачи как массив
+  let tasks = Array.from(taskList.querySelectorAll("li"));
   tasks.sort((a, b) => {
     if (sortBy === "date") {
-      let dateA = new Date(a.querySelector("span").textContent.replace(/[()]/g, "")); // Получаем дату задачи A
-      let dateB = new Date(b.querySelector("span").textContent.replace(/[()]/g, "")); // Получаем дату задачи B
-      return dateA - dateB; // Сравниваем даты
+      let dateA = new Date(a.querySelector("span").textContent.replace(/[()]/g, ""));
+      let dateB = new Date(b.querySelector("span").textContent.replace(/[()]/g, ""));
+      return dateA - dateB;
     } else if (sortBy === "text") {
-      let textA = a.childNodes[0].textContent.toLowerCase(); // Получаем текст задачи A
-      let textB = b.childNodes[0].textContent.toLowerCase(); // Получаем текст задачи B
-      return textA.localeCompare(textB); // Сравниваем текст
+      let textA = a.childNodes[0].textContent.toLowerCase();
+      let textB = b.childNodes[0].textContent.toLowerCase();
+      return textA.localeCompare(textB);
     }
   });
 
-  taskList.innerHTML = ""; // Очищаем список
-  tasks.forEach(task => taskList.appendChild(task)); // Добавляем отсортированные задачи
+  taskList.innerHTML = "";
+  tasks.forEach(task => taskList.appendChild(task));
 }
 
-// Кнопка для сброса сортировки
-let resetSortBtn = document.createElement("button"); // Создаем кнопку "Сбросить сортировку"
-resetSortBtn.textContent = "Сбросить сортировку"; // Текст кнопки
-resetSortBtn.id = "resetSortBtn"; // Добавляем ID
-resetSortBtn.style.marginTop = "10px"; // Отступ сверху
-document.getElementById("sorting").appendChild(resetSortBtn); // Добавляем кнопку в контейнер сортировки
+// Сброс сортировки
+let resetSortBtn = document.createElement("button");
+resetSortBtn.textContent = "Сбросить сортировку";
+resetSortBtn.id = "resetSortBtn";
+resetSortBtn.style.marginTop = "10px";
+document.getElementById("sorting").appendChild(resetSortBtn);
 
-// Обработчик для сброса сортировки
 resetSortBtn.addEventListener("click", function () {
-  taskList.innerHTML = ""; // Очищаем список
-  originalTasks.forEach(task => taskList.appendChild(task)); // Возвращаем задачи в исходном порядке
+  taskList.innerHTML = "";
+  originalTasks.forEach(task => taskList.appendChild(task));
 });
 
+// Поиск задач
 searchInput.addEventListener("input", function () {
-  let searchText = searchInput.value.trim().toLowerCase(); // Получаем текст для поиска
-  let tasks = taskList.querySelectorAll("li"); // Получаем все задачи
+  let searchText = searchInput.value.trim().toLowerCase();
+  let tasks = taskList.querySelectorAll("li");
 
   tasks.forEach(task => {
-    let taskText = task.childNodes[0].textContent.toLowerCase(); // Получаем текст задачи (первый дочерний элемент)
+    let taskText = task.childNodes[0].textContent.toLowerCase();
     if (taskText.includes(searchText)) {
-      task.style.display = "flex"; // Показываем задачу
+      task.style.display = "flex";
     } else {
-      task.style.display = "none"; // Скрываем задачу
+      task.style.display = "none";
     }
   });
+});
+
+// Переключение темы
+themeToggle.addEventListener("click", function () {
+  document.body.classList.toggle("dark-theme");
+  if (document.body.classList.contains("dark-theme")) {
+    localStorage.setItem("theme", "dark");
+    themeToggle.textContent = "Светлая тема";
+  } else {
+    localStorage.setItem("theme", "light");
+    themeToggle.textContent = "Темная тема";
+  }
 });
