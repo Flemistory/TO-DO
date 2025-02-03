@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"> <!-- Указываем кодировку страницы (UTF-8 для поддержки кириллицы) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Делаем страницу адаптивной -->
+  <title>To-Do List</title> <!-- Заголовок страницы -->
+  <link rel="stylesheet" href="styles.css"> <!-- Подключаем файл стилей -->
+</head>
+<body>
+  <div id="app"> <!-- Основной контейнер приложения -->
+    <h1>Zаметки</h1> <!-- Заголовок приложения -->
+    <h2>Добавь задачу</h2> <!-- Подзаголовок -->
+    <input type="text" id="taskInput" placeholder="Новая задача"> <!-- Поле ввода для новой задачи -->
+    <button id="addTaskBtn">Добавить</button> <!-- Кнопка для добавления задачи -->
+    <h3>Все задачи на сегодня</h3> <!-- Заголовок списка задач -->
+    <input type="text" id="searchInput" placeholder="Поиск задач"> <!-- Поле для поиска задач -->
+    <ul id="taskList"></ul> <!-- Список задач (будет заполняться через JavaScript) -->
+    <div id="filters"> <!-- Контейнер для кнопок фильтрации -->
+      <button id="showAll">Все</button> <!-- Кнопка "Все" -->
+      <button id="showActive">Активные</button> <!-- Кнопка "Активные" -->
+      <button id="showCompleted">Выполненные</button> <!-- Кнопка "Выполненные" -->
+    </div>
+    <div id="sorting"> <!-- Контейнер для кнопок сортировки -->
+      <button id="sortByDate">Сортировать по дате</button> <!-- Кнопка "Сортировать по дате" -->
+      <button id="sortByText">Сортировать по алфавиту</button> <!-- Кнопка "Сортировать по алфавиту" -->
+     
+    </div>
+  </div>
+  <script src="app.js"></script> <!-- Подключаем JavaScript-файл -->
+</body>
+</html>
