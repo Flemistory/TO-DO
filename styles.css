@@ -55,6 +55,7 @@ li {
   margin-top: 5px;
   border-radius: 4px;
   background-color: #f9f9f9;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .completed {
@@ -157,4 +158,31 @@ body.dark-theme li {
 
 body.dark-theme .completed {
   color: #bbb;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shrinkFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+li.shrink-fade-out {
+  animation: shrinkFadeOut 0.3s ease-in-out;
 }

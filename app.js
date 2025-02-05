@@ -93,9 +93,12 @@ function addTaskToDOM(text, completed = false, date = new Date().toLocaleString(
   deleteBtn.textContent = "Удалить";
   deleteBtn.classList.add("delete-btn");
   deleteBtn.addEventListener("click", function () {
+  li.classList.add("shrink-fade-out");
+  setTimeout(() => {
     li.remove();
     updateLocalStorage();
-  });
+  }, 300);
+});
 
   taskButtons.appendChild(completeBtn);
   taskButtons.appendChild(editBtn);
@@ -224,3 +227,24 @@ themeToggle.addEventListener("click", function () {
     themeToggle.textContent = "Темная тема";
   }
 });
+
+// Уведомления о дедлайнах
+function checkDeadlines() {
+  let tasks = taskList.querySelectorAll("li");
+  tasks.forEach(task => {
+    let deadlineText = task.querySelectorAll("span")[3]?.textContent.replace("⏰ ", "");
+    if (deadlineText) {
+      let deadlineDate = new Date(deadlineText);
+      let now = new Date();
+      let timeDiff = deadlineDate - now; // Разница в миллисекундах
+      let hoursDiff = timeDiff / (1000 * 60 * 60); // Разница в часах
+
+      if (hoursDiff <= 24 && hoursDiff > 0) {
+        alert(`Задача "${task.childNodes[0].textContent}" скоро истекает!`);
+      }
+    }
+  });
+}
+
+// Проверяем дедлайны каждую минуту
+setInterval(checkDeadlines, 60000);
