@@ -63,10 +63,18 @@ li {
   color: #888;
 }
 
+.task-buttons {
+    display: flex;
+    flex-wrap:wrap;
+    gap: 10px;
+    justify-content:flex-end;
+}
+
 .task-buttons button {
   margin-left: 5px;
-  padding: 5px 10px;
+  padding: 5px 8px;
   font-size: 12px;
+  white-space:nowrap;
 }
 
 .task-buttons .complete-btn {
@@ -130,6 +138,7 @@ li {
   margin-top: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-sizing: border-box;
 }
 
 /* Темная тема */
