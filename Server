@@ -1,0 +1,113 @@
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+
+const app = express();
+const PORT = 3000;
+
+// Применяем middleware
+app.use(cors());
+app.use(bodyParser.json());
+
+// Простая база данных в памяти
+let tasks = [
+  { id: 1, text: 'Задача 1', completed: false, category: 'Работа', priority: 'Высокий', deadline: '2025-02-12' },
+  { id: 2, text: 'Задача 2', completed: true, category: 'Дом', priority: 'Средний', deadline: '2025-02-15' },
+];
+
+// Получить все задачи
+app.get('/api/tasks', (req, res) => {
+  res.json(tasks);
+});
+
+// Добавить новую задачу
+app.post('/api/tasks', (req, res) => {
+  const { text, completed, category, priority, deadline } = req.body;
+  const newTask = {
+    id: tasks.length + 1,
+    text,
+    completed,
+    category,
+    priority,
+    deadline
+  };
+  tasks.push(newTask);
+  res.status(201).json(newTask);
+});
+
+// Обновить задачу
+app.put('/api/tasks/:id', (req, res) => {
+  const { id } = req.params;
+  const { text, completed, category, priority, deadline } = req.body;
+  const taskIndex = tasks.findIndex(task => task.id === parseInt(id));
+
+  if (taskIndex === -1) {
+    return res.status(404).json({ message: 'Task not found' });
+  }
+
+  tasks[taskIndex] = { ...tasks[taskIndex], text, completed, category, priority, deadline };
+  res.json(tasks[taskIndex]);
+});
+
+// Удалить задачу
+app.delete('/api/tasks/:id', (req, res) => {
+  const { id } = req.params;
+  const taskIndex = tasks.findIndex(task => task.id === parseInt(id));
+
+  if (taskIndex === -1) {
+    return res.status(404).json({ message: 'Task not found' });
+  }
+
+  tasks.splice(taskIndex, 1);
+  res.status(204).end();
+});
+
+// Запуск сервера
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+addTaskBtn.addEventListener("click", async function () {
+  let taskText = taskInput.value.trim();
+  let taskCategory = categoryInput.value;
+  let taskDeadline = deadlineInput.value;
+  let taskPriority = priorityInput.value;
+
+  if (taskText !== "") {
+    const response = await fetch('http://localhost:3000/api/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        text: taskText,
+        completed: false,
+        category: taskCategory,
+        priority: taskPriority,
+        deadline: taskDeadline
+      })
+    });
+
+    const newTask = await response.json();
+    addTaskToDOM(newTask.text, newTask.completed, newTask.date, newTask.category, newTask.deadline, newTask.priority);
+    taskInput.value = "";
+    deadlineInput.value = "";
+  }
+});
+document.addEventListener("DOMContentLoaded", async function () {
+  const response = await fetch('http://localhost:3000/api/tasks');
+  const tasks = await response.json();
+  tasks.forEach(task => {
+    addTaskToDOM(task.text, task.completed, task.date, task.category, task.deadline, task.priority);
+  });
+});
+deleteBtn.addEventListener("click", async function () {
+  const taskId = li.dataset.id;
+
+  const response = await fetch(`http://localhost:3000/api/tasks/${taskId}`, {
+    method: 'DELETE',
+  });
+
+  if (response.ok) {
+    li.remove();
+  }
+});
