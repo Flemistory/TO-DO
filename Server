@@ -66,48 +66,4 @@ app.delete('/api/tasks/:id', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-addTaskBtn.addEventListener("click", async function () {
-  let taskText = taskInput.value.trim();
-  let taskCategory = categoryInput.value;
-  let taskDeadline = deadlineInput.value;
-  let taskPriority = priorityInput.value;
 
-  if (taskText !== "") {
-    const response = await fetch('http://localhost:3000/api/tasks', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        text: taskText,
-        completed: false,
-        category: taskCategory,
-        priority: taskPriority,
-        deadline: taskDeadline
-      })
-    });
-
-    const newTask = await response.json();
-    addTaskToDOM(newTask.text, newTask.completed, newTask.date, newTask.category, newTask.deadline, newTask.priority);
-    taskInput.value = "";
-    deadlineInput.value = "";
-  }
-});
-document.addEventListener("DOMContentLoaded", async function () {
-  const response = await fetch('http://localhost:3000/api/tasks');
-  const tasks = await response.json();
-  tasks.forEach(task => {
-    addTaskToDOM(task.text, task.completed, task.date, task.category, task.deadline, task.priority);
-  });
-});
-deleteBtn.addEventListener("click", async function () {
-  const taskId = li.dataset.id;
-
-  const response = await fetch(`http://localhost:3000/api/tasks/${taskId}`, {
-    method: 'DELETE',
-  });
-
-  if (response.ok) {
-    li.remove();
-  }
-});
