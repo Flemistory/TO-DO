@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app">
+    <h1>Заметки</h1>
+    <button id="themeToggle">Темная тема</button>
+    <h2>Добавь задачу</h2>
+    <input type="text" id="taskInput" placeholder="Новая задача">
+    <select id="categoryInput">
+      <option value="Работа">Работа</option>
+      <option value="Дом">Дом</option>
+      <option value="Учеба">Учеба</option>
+      <option value="Другое">Другое</option>
+    </select>
+    <select id="priorityInput">
+      <option value="Высокий">Высокий</option>
+      <option value="Средний">Средний</option>
+      <option value="Низкий">Низкий</option>
+    </select>
+    <input type="date" id="deadlineInput">
+    <button id="addTaskBtn">Добавить</button>
+    <h3>Все задачи на сегодня</h3>
+    <input type="text" id="searchInput" placeholder="Поиск задач">
+    <ul id="taskList"></ul>
+    <div id="filters">
+      <button id="showAll">Все</button>
+      <button id="showActive">Активные</button>
+      <button id="showCompleted">Выполненные</button>
+    </div>
+    <div id="sorting">
+      <button id="sortByDate">Сортировать по дате</button>
+      <button id="sortByText">Сортировать по алфавиту</button>
+    </div>
+  </div>
+  <script src="js/app.js"></script>
+</body>
+</html>
