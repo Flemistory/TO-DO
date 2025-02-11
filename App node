@@ -1,4 +1,3 @@
-// app.js
 document.addEventListener("DOMContentLoaded", async function () {
   const taskInput = document.getElementById("taskInput");
   const addTaskBtn = document.getElementById("addTaskBtn");
