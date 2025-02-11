@@ -1,68 +1,45 @@
-express = require('express');
-const cors = require('cors');
+const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const port = 3000;
 
-// Применяем middleware
-app.use(cors());
+// Подключаем middleware для обработки JSON
 app.use(bodyParser.json());
 
-// Простая база данных в памяти
-let tasks = [
-  { id: 1, text: 'Задача 1', completed: false, category: 'Работа', priority: 'Высокий', deadline: '2025-02-12' },
-  { id: 2, text: 'Задача 2', completed: true, category: 'Дом', priority: 'Средний', deadline: '2025-02-15' },
-];
+// Путь к статическим файлам (CSS, JS, и т.д.)
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Получить все задачи
+// Массив задач для примера
+let tasks = [];
+
+// Маршрут для добавления задачи
+app.post('/api/tasks', (req, res) => {
+  const { text, completed, category, deadline, priority } = req.body;
+  const newTask = {
+    text,
+    completed,
+    category,
+    deadline,
+    priority,
+    date: new Date().toLocaleString(),
+  };
+  tasks.push(newTask);
+  res.json(newTask); // Отправляем добавленную задачу обратно
+});
+
+// Маршрут для получения всех задач
 app.get('/api/tasks', (req, res) => {
   res.json(tasks);
 });
 
-// Добавить новую задачу
-app.post('/api/tasks', (req, res) => {
-  const { text, completed, category, priority, deadline } = req.body;
-  const newTask = {
-    id: tasks.length + 1,
-    text,
-    completed,
-    category,
-    priority,
-    deadline
-  };
-  tasks.push(newTask);
-  res.status(201).json(newTask);
-});
-
-// Обновить задачу
-app.put('/api/tasks/:id', (req, res) => {
-  const { id } = req.params;
-  const { text, completed, category, priority, deadline } = req.body;
-  const taskIndex = tasks.findIndex(task => task.id === parseInt(id));
-
-  if (taskIndex === -1) {
-    return res.status(404).json({ message: 'Task not found' });
-  }
-
-  tasks[taskIndex] = { ...tasks[taskIndex], text, completed, category, priority, deadline };
-  res.json(tasks[taskIndex]);
-});
-
-// Удалить задачу
-app.delete('/api/tasks/:id', (req, res) => {
-  const { id } = req.params;
-  const taskIndex = tasks.findIndex(task => task.id === parseInt(id));
-
-  if (taskIndex === -1) {
-    return res.status(404).json({ message: 'Task not found' });
-  }
-
-  tasks.splice(taskIndex, 1);
-  res.status(204).end();
+// Главная страница
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Запуск сервера
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });
