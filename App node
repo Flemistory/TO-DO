@@ -1,48 +1,80 @@
-document.addEventListener("DOMContentLoaded", async function () {
-  const taskInput = document.getElementById("taskInput");
-  const addTaskBtn = document.getElementById("addTaskBtn");
-  const taskList = document.getElementById("taskList");
-  const showAll = document.getElementById("showAll");
-  const showActive = document.getElementById("showActive");
-  const showCompleted = document.getElementById("showCompleted");
+// Получаем элементы DOM
+const taskInput = document.getElementById('taskInput');  // Поле для ввода задачи
+const categoryInput = document.getElementById('categoryInput');  // Селектор категории
+const priorityInput = document.getElementById('priorityInput');  // Селектор приоритета
+const deadlineInput = document.getElementById('deadlineInput');  // Поле для даты
+const addTaskBtn = document.getElementById('addTaskBtn');  // Кнопка добавления задачи
+const taskList = document.getElementById('taskList');  // Список задач
 
-  // Функция для получения всех задач с сервера
-  async function getTasks() {
-    const response = await fetch('http://localhost:3000/tasks');
-    const tasks = await response.json();
-    taskList.innerHTML = ''; // Очистить список
-    tasks.forEach(task => addTaskToDOM(task));
-  }
+// Функция для добавления задачи на сервер
+async function addTaskToServer(task) {
+  try {
+    // Отправляем POST запрос на сервер с данными задачи
+    const response = await fetch('http://localhost:3000/api/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',  // Указываем тип содержимого
+      },
+      body: JSON.stringify(task),  // Преобразуем задачу в строку JSON
+    });
 
-  // Добавить задачу в DOM
-  function addTaskToDOM(task) {
-    const li = document.createElement('li');
-    li.textContent = task.text;
-    taskList.appendChild(li);
-  }
-
-  // Добавить новую задачу
-  addTaskBtn.addEventListener('click', async () => {
-    const taskText = taskInput.value.trim();
-    const taskCategory = document.getElementById('categoryInput').value;
-    const taskPriority = document.getElementById('priorityInput').value;
-    const taskDeadline = document.getElementById('deadlineInput').value;
-
-    if (taskText !== "") {
-      const newTask = { text: taskText, completed: false, category: taskCategory, priority: taskPriority, deadline: taskDeadline };
-      
-      // Отправить запрос на добавление задачи на сервер
-      await fetch('http://localhost:3000/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newTask)
-      });
-      
-      taskInput.value = ''; // Очистить поле ввода
-      getTasks(); // Обновить список задач
+    // Если задача добавлена успешно, обновляем список задач
+    if (response.ok) {
+      const data = await response.json();  // Получаем ответ от сервера (новая задача)
+      console.log('Task added:', data);  // Выводим информацию о задаче в консоль
+      renderTasks();  // Обновляем отображение задач
+    } else {
+      console.error('Error adding task:', response.status);  // Выводим ошибку, если запрос не удался
     }
-  });
+  } catch (error) {
+    console.error('Error:', error);  // Логируем ошибку, если что-то пошло не так
+  }
+}
 
-  // Изначально загрузить все задачи
-  getTasks();
+// Функция для получения задач с сервера
+async function fetchTasks() {
+  try {
+    // Отправляем GET запрос для получения задач
+    const response = await fetch('http://localhost:3000/api/tasks');
+    if (response.ok) {
+      const tasks = await response.json();  // Получаем задачи от сервера
+      renderTaskList(tasks);  // Отображаем задачи на странице
+    } else {
+      console.error('Error fetching tasks:', response.status);  // Логируем ошибку, если не удалось получить задачи
+    }
+  } catch (error) {
+    console.error('Error:', error);  // Логируем ошибку, если запрос не удался
+  }
+}
+
+// Функция для рендера списка задач
+function renderTaskList(tasks) {
+  taskList.innerHTML = '';  // Очищаем список задач перед обновлением
+  tasks.forEach(task => {  // Перебираем все задачи
+    const li = document.createElement('li');  // Создаем элемент списка для задачи
+    li.innerHTML = `${task.text} - ${task.category} - ${task.priority}`;  // Вставляем данные задачи
+    taskList.appendChild(li);  // Добавляем элемент в список
+  });
+}
+
+// Функция для рендера всех задач
+function renderTasks() {
+  fetchTasks();  // Загружаем задачи с сервера
+}
+
+// Обработчик клика по кнопке добавления задачи
+addTaskBtn.addEventListener('click', () => {
+  const task = {
+    text: taskInput.value,  // Получаем текст задачи
+    completed: false,  // Задача еще не выполнена
+    category: categoryInput.value,  // Получаем категорию
+    deadline: deadlineInput.value,  // Получаем дату выполнения
+    priority: priorityInput.value,  // Получаем приоритет
+  };
+  addTaskToServer(task);  // Отправляем задачу на сервер
+  taskInput.value = '';  // Очистка поля ввода
+  deadlineInput.value = '';  // Очистка поля даты
 });
+
+// Загружаем все задачи при загрузке страницы
+document.addEventListener('DOMContentLoaded', renderTasks);
