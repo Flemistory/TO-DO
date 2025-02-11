@@ -1,4 +1,4 @@
-const express = require('express');
+express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
@@ -66,4 +66,3 @@ app.delete('/api/tasks/:id', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
