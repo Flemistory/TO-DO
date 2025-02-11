@@ -1,45 +1,58 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
+// Импортируем необходимые модули
+const express = require('express');   // Express - серверный фреймворк для Node.js
+const bodyParser = require('body-parser');  // Модуль для парсинга тела запроса в формате JSON
+const path = require('path');  // Модуль для работы с путями файлов в системе
 
+// Создаем экземпляр приложения Express
 const app = express();
+
+// Устанавливаем порт, на котором будет работать сервер
 const port = 3000;
 
-// Подключаем middleware для обработки JSON
+// Используем middleware для обработки JSON данных в теле запросов
 app.use(bodyParser.json());
 
-// Путь к статическим файлам (CSS, JS, и т.д.)
+// Устанавливаем путь к статическим файлам (CSS, JS, и т.д.)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Массив задач для примера
+// Массив для хранения задач (пока используем его в качестве базы данных)
 let tasks = [];
 
 // Маршрут для добавления задачи
 app.post('/api/tasks', (req, res) => {
+  // Получаем данные из тела запроса
   const { text, completed, category, deadline, priority } = req.body;
+  
+  // Создаем новую задачу
   const newTask = {
     text,
     completed,
     category,
     deadline,
     priority,
-    date: new Date().toLocaleString(),
+    date: new Date().toLocaleString(),  // Добавляем текущую дату задачи
   };
+  
+  // Добавляем задачу в массив
   tasks.push(newTask);
-  res.json(newTask); // Отправляем добавленную задачу обратно
+  
+  // Отправляем добавленную задачу обратно в ответ
+  res.json(newTask); 
 });
 
 // Маршрут для получения всех задач
 app.get('/api/tasks', (req, res) => {
+  // Отправляем все задачи клиенту
   res.json(tasks);
 });
 
 // Главная страница
 app.get('/', (req, res) => {
+  // Отправляем главный HTML файл
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Запуск сервера
+// Запускаем сервер
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
